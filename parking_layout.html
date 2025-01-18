@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Layout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            padding-top: 60px;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            background: #0d6efd;
+            color: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        header .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        header .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        header .user-info span {
+            margin-right: 1rem;
+            font-weight: bold;
+        }
+
+        header .login-btn, header .logout-btn {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            background: #0d6efd;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        header .login-btn:hover, header .logout-btn:hover {
+            background: #0a58ca;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            padding: 2rem;
+            margin-top: 100px;
+        }
+
+        .form-section {
+            width: 40%;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section h2 {
+            margin-bottom: 1rem;
+        }
+
+        .form-section input {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-section button {
+            width: 48%;
+            padding: 0.8rem;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        .form-section button:hover {
+            background: #0a58ca;
+        }
+
+        .form-section .unpark-btn {
+            background-color: #dc3545;
+        }
+
+        .form-section .unpark-btn:hover {
+            background-color: #c82333;
+        }
+
+        .parking-layout {
+            width: 55%;
+            display: grid;
+            grid-template-columns: repeat(5, 100px);
+            grid-gap: 10px;
+            padding: 1rem;
+            text-align: center;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .block {
+            width: 100px;
+            height: 100px;
+            background-color: #28a745;
+            border: 2px solid #fff;
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .block .number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .block.selected {
+            border: 2px solid #ffcc00;
+            background-color: #80d3ff;
+        }
+
+        .block.parked {
+            background-color: #ffc107;
+            pointer-events: none;
+        }
+
+        table {
+            width: 80%;
+            margin-top: 2rem;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table th, table td {
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        table td {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        table .unpark-table-btn {
+            padding: 0.5rem 1rem;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        table .unpark-table-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Smart Parking</div>
+        <div class="user-info">
+            <span id="username"></span>
+            <button class="logout-btn" id="logoutBtn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="form-section">
+            <h2>Vehicle Details</h2>
+            <form id="vehicleForm">
+                <input type="text" id="ownerName" placeholder="Owner Name" required>
+                <input type="text" id="vehicleName" placeholder="Vehicle Name" required>
+                <input type="text" id="vehicleNumber" placeholder="Vehicle Number" required>
+                <input type="datetime-local" id="entryTime" required>
+                <input type="datetime-local" id="exitTime" required>
+                <button type="button" id="parkBtn">Park</button>
+                <button type="button" id="unparkBtn" class="unpark-btn">Unpark</button>
+            </form>
+        </div>
+
+        <div class="parking-layout" id="parkingLayout">
+        </div>
+    </div>
+
+    <table id="parkedVehiclesTable">
+        <thead>
+            <tr>
+                <th>Block No</th>
+                <th>Owner Name</th>
+                <th>Vehicle Name</th>
+                <th>Vehicle Number</th>
+                <th>Entry Time</th>
+                <th>Exit Time</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script>
+        window.onload = function() {
+            const username = localStorage.getItem('username');
+            const usernameDisplay = document.getElementById('username');
+
+            if (username) {
+                usernameDisplay.textContent = `Hello, ${username}`;
+            }
+
+            const parkingLayout = document.getElementById('parkingLayout');
+            for (let i = 1; i <= 10; i++) {
+                const block = document.createElement('div');
+                block.classList.add('block');
+                block.setAttribute('data-id', i);
+
+                const number = document.createElement('div');
+                number.classList.add('number');
+                number.textContent = i;
+                block.appendChild(number);
+
+                block.onclick = function() {
+                    selectBlock(block);
+                };
+
+                parkingLayout.appendChild(block);
+            }
+
+            document.getElementById('parkBtn').addEventListener('click', function() {
+                const selectedBlock = document.querySelector('.block.selected');
+                if (selectedBlock) {
+                    if (selectedBlock.classList.contains('parked')) {
+                        alert('This block is already occupied.');
+                    } else {
+                        selectedBlock.classList.add('parked');
+                        selectedBlock.dataset.ownerName = document.getElementById('ownerName').value;
+                        selectedBlock.dataset.vehicleName = document.getElementById('vehicleName').value;
+                        selectedBlock.dataset.vehicleNumber = document.getElementById('vehicleNumber').value;
+                        selectedBlock.dataset.entryTime = document.getElementById('entryTime').value;
+                        selectedBlock.dataset.exitTime = document.getElementById('exitTime').value;
+
+                        updateParkedVehiclesTable(selectedBlock);
+
+                        alert('Vehicle parked!');
+                        document.getElementById('vehicleForm').reset();
+                    }
+                } else {
+                    alert('Please select a block to park.');
+                }
+            });
+
+            document.getElementById('unparkBtn').addEventListener('click', function() {
+                const selectedBlock = document.querySelector('.block.selected');
+                if (selectedBlock && selectedBlock.classList.contains('parked')) {
+                    unparkVehicle(selectedBlock);
+                } else {
+                    alert('No parked vehicle selected to unpark.');
+                }
+            });
+        };
+
+        function logout() {
+            localStorage.removeItem('username');
+            window.location.href = 'index.html';
+        }
+
+        function selectBlock(block) {
+            const previouslySelected = document.querySelector('.block.selected');
+            if (previouslySelected) {
+                previouslySelected.classList.remove('selected');
+            }
+            block.classList.add('selected');
+        }
+
+        function updateParkedVehiclesTable(block) {
+            const tableBody = document.getElementById('parkedVehiclesTable').getElementsByTagName('tbody')[0];
+            const row = tableBody.insertRow();
+            row.setAttribute('data-block-id', block.dataset.id);
+
+            row.insertCell(0).textContent = block.dataset.id;
+            row.insertCell(1).textContent = block.dataset.ownerName;
+            row.insertCell(2).textContent = block.dataset.vehicleName;
+            row.insertCell(3).textContent = block.dataset.vehicleNumber;
+            row.insertCell(4).textContent = block.dataset.entryTime;
+            row.insertCell(5).textContent = block.dataset.exitTime;
+
+            const actionCell = row.insertCell(6);
+            const unparkButton = document.createElement('button');
+            unparkButton.textContent = 'Unpark';
+            unparkButton.classList.add('unpark-table-btn');
+            unparkButton.onclick = function() {
+                const blockId = row.getAttribute('data-block-id');
+                const block = document.querySelector(`.block[data-id='${blockId}']`);
+                unparkVehicle(block);
+            };
+            actionCell.appendChild(unparkButton);
+        }
+
+        function unparkVehicle(block) {
+            block.classList.remove('parked');
+            delete block.dataset.ownerName;
+            delete block.dataset.vehicleName;
+            delete block.dataset.vehicleNumber;
+            delete block.dataset.entryTime;
+            delete block.dataset.exitTime;
+
+            const tableBody = document.getElementById('parkedVehiclesTable').getElementsByTagName('tbody')[0];
+            const rows = tableBody.getElementsByTagName('tr');
+            for (let row of rows) {
+                if (row.getAttribute('data-block-id') === block.dataset.id) {
+                    tableBody.deleteRow(row.rowIndex - 1);
+                    break;
+                }
+            }
+
+            alert('Vehicle unparked!');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Parking System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: #0d6efd;
+            color: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        header .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+        }
+
+        header nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        header .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        header .user-info span {
+            margin-right: 1rem;
+            font-weight: bold;
+        }
+
+        header .login-btn, header .logout-btn {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            background: #0d6efd;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        header .login-btn:hover, header .logout-btn:hover {
+            background: #0a58ca;
+        }
+
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(13, 110, 253, 0.8), rgba(0, 0, 0, 0.8)),
+                        url('https://source.unsplash.com/1600x900/?parking') no-repeat center/cover;
+            color: #fff;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 3s ease-in-out;
+        }
+
+        .hero .btn {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            background: #0d6efd;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+
+        .hero .btn:hover {
+            background: #0a58ca;
+        }
+
+        section {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(13, 110, 253, 0.8), rgba(0, 0, 0, 0.8)),
+                        url('https://source.unsplash.com/1600x900/?parking') no-repeat center/cover;
+            color: #fff;
+            padding: 4rem 2rem;
+        }
+
+        section h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        #features ul {
+            list-style: none;
+            margin: 1rem 0;
+            padding: 0;
+        }
+
+        #features ul li {
+            margin: 0.5rem 0;
+            font-size: 1.5rem;
+        }
+
+        #contact form {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        #contact form input, #contact form textarea, #contact form button {
+            width: 100%;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #contact form button {
+            background: #0d6efd;
+            color: white;
+            cursor: pointer;
+        }
+
+        #contact form button:hover {
+            background: #0a58ca;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Smart Parking</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="user-info">
+            <span id="username"></span>
+            <button class="login-btn" id="loginBtn" onclick="redirectToLogin()">Login</button>
+            <button class="logout-btn" id="logoutBtn" onclick="logout()" style="display:none;">Logout</button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="content">
+            <h1>Welcome to Smart Parking System</h1>
+            <p>Experience the ease of smart parking with our advanced system.</p>
+            <button class="btn" onclick="checkLoginStatus()">Let's Start</button>
+        </div>
+    </div>
+
+    <section id="features">
+        <h2>Features</h2>
+        <ul>
+            <li>Real-time Parking Availability</li>
+            <li>Easy-to-Use Interface</li>
+            <li>Secure and Efficient Parking System</li>
+            <li>Integrated Payment Options</li>
+        </ul>
+    </section>
+
+    <section id="about">
+        <h2>About Us</h2>
+        <p>Our Smart Parking System is designed to revolutionize the parking experience. With advanced technology and user-friendly features, we aim to reduce parking hassles and save time for everyone.</p>
+    </section>
+
+    <section id="contact">
+        <h2>Contact Us</h2>
+        <form>
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
+
+    <script>
+        window.onload = function() {
+            const username = localStorage.getItem('username');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const usernameDisplay = document.getElementById('username');
+            
+            if (username) {
+                usernameDisplay.textContent = `Hello, ${username}`;
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'inline-block';
+            } else {
+                loginBtn.style.display = 'inline-block';
+                logoutBtn.style.display = 'none';
+            }
+        };
+
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            
+            if (isLoggedIn === 'true') {
+                window.location.href = 'parking.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function redirectToLogin() {
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('username');
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

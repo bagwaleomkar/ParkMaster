@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Parking Area</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            overflow-x: hidden;
+            padding-top: 60px;
+        }
+
+        header {
+            background: #0d6efd;
+            color: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        header .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        header .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        header .user-info span {
+            margin-right: 1rem;
+            font-weight: bold;
+        }
+
+        header .login-btn, header .logout-btn {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            background: #0d6efd;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        header .login-btn:hover, header .logout-btn:hover {
+            background: #0a58ca;
+        }
+
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(13, 110, 253, 0.8), rgba(0, 0, 0, 0.8)),
+                        url('https://source.unsplash.com/1600x900/?parking') no-repeat center/cover;
+            color: #fff;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .parking-area-selection {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .parking-area-selection h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .popup-frame {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 2rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1100;
+        }
+
+        .popup-frame h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .parking-blocks {
+            display: grid;
+            grid-template-columns: repeat(5, 100px);
+            grid-gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .block {
+            width: 100px;
+            height: 100px;
+            background-color: #0d6efd;
+            border: 2px solid #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .block.selected {
+            background-color: #28a745;
+        }
+
+        .popup-frame button {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            background: #0d6efd;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup-frame button:hover {
+            background: #0a58ca;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Smart Parking</div>
+        <div class="user-info">
+            <span id="username"></span>
+            <button class="login-btn" id="loginBtn" onclick="redirectToLogin()">Login</button>
+            <button class="logout-btn" id="logoutBtn" onclick="logout()" style="display:none;">Logout</button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="content">
+            <h1>Select Your Parking Area</h1>
+            <p>Choose your parking block from the available slots.</p>
+
+            <div class="parking-area-selection">
+                <h2>Choose Parking Blocks</h2>
+                <button onclick="openPopup()">Select Blocks</button>
+            </div>
+        
+            <!-- Pop-up frame for parking block selection -->
+            <div class="popup-frame" id="popupFrame">
+                <h3>Select Parking Blocks</h3>
+                <div class="parking-blocks" id="parkingBlocks">
+                    <!-- Blocks will be added dynamically here -->
+                </div>
+                <button onclick="confirmSelection()">OK</button>
+            </div>
+        </div>
+    </div>
+
+   
+
+    <script>
+        // Check if the user is logged in and update the login/logout buttons
+        window.onload = function() {
+            const username = localStorage.getItem('username');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const usernameDisplay = document.getElementById('username');
+            
+            if (username) {
+                usernameDisplay.textContent = `Hello, ${username}`;
+                loginBtn.style.display = 'none'; 
+                logoutBtn.style.display = 'inline-block';
+            } else {
+                loginBtn.style.display = 'inline-block';
+                logoutBtn.style.display = 'none';
+            }
+        };
+
+        // Open the pop-up for parking block selection
+        function openPopup() {
+            const popupFrame = document.getElementById('popupFrame');
+            const parkingBlocks = document.getElementById('parkingBlocks');
+
+            // Create 20 parking blocks
+            parkingBlocks.innerHTML = '';
+            for (let i = 1; i <= 20; i++) {
+                const block = document.createElement('div');
+                block.classList.add('block');
+                block.setAttribute('data-id', i);
+                block.onclick = function() {
+                    block.classList.toggle('selected');
+                };
+                parkingBlocks.appendChild(block);
+            }
+
+            popupFrame.style.display = 'block'; // Show the pop-up
+        }
+
+        // Confirm the selected blocks and redirect to the parking layout page
+        function confirmSelection() {
+            const selectedBlocks = document.querySelectorAll('.block.selected');
+            const selectedIds = Array.from(selectedBlocks).map(block => block.getAttribute('data-id'));
+
+            // Save selected blocks to localStorage for the next page
+            localStorage.setItem('selectedParkingBlocks', JSON.stringify(selectedIds));
+
+            // Close the pop-up and redirect to the new page (for showing selected parking blocks)
+            window.location.href = 'parking_layout.html';
+        }
+
+        // Logout function to clear data
+        function logout() {
+            localStorage.removeItem('username');
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'index.html';
+        }
+
+        function redirectToLogin() {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
